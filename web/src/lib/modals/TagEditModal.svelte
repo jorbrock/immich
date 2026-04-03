@@ -15,9 +15,10 @@
   const { tag, onClose }: Props = $props();
 
   let tagColor = $state(tag.color ?? '');
+  let tagName = $state(tag.value ?? '');
 
   const onSubmit = async () => {
-    const success = await handleUpdateTag(tag, { color: tagColor });
+    const success = await handleUpdateTag(tag, { color: tagColor, name: tagName });
     if (success) {
       onClose();
     }
@@ -26,4 +27,5 @@
 
 <FormModal title={$t('edit_tag')} size="small" icon={mdiTag} {onClose} {onSubmit}>
   <SettingInputField inputType={SettingInputFieldType.COLOR} label={$t('color')} bind:value={tagColor} />
+  <SettingInputField inputType={SettingInputFieldType.TEXT} label={$t('name')} bind:value={tagName} />
 </FormModal>

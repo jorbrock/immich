@@ -25044,6 +25044,11 @@
             "description": "Tag color (hex)",
             "nullable": true,
             "type": "string"
+          },
+          "name": {
+            "description": "Tag name",
+            "nullable": true,
+            "type": "string"
           }
         },
         "type": "object"

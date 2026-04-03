@@ -21,6 +21,11 @@ export class TagCreateDto {
 }
 
 export class TagUpdateDto {
+  @ApiPropertyOptional({ description: 'Tag name' })
+  @IsString()
+  @Optional({ emptyToNull: true, nullable: true })
+  name?: string | null;
+
   @ApiPropertyOptional({ description: 'Tag color (hex)' })
   @Optional({ nullable: true, emptyToNull: true })
   @ValidateHexColor()

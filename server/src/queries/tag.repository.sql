@@ -13,6 +13,19 @@ from
 where
   "id" = $1
 
+-- TagRepository.getMany
+select
+  "tag"."id",
+  "tag"."value",
+  "tag"."createdAt",
+  "tag"."updatedAt",
+  "tag"."color",
+  "tag"."parentId"
+from
+  "tag"
+where
+  "id" in $1
+
 -- TagRepository.getByValue
 select
   "tag"."id",
@@ -71,9 +84,10 @@ returning
 -- TagRepository.update
 update "tag"
 set
-  "color" = $1
+  "value" = $1,
+  "color" = $2
 where
-  "id" = $2
+  "id" = $3
 returning
   *
 

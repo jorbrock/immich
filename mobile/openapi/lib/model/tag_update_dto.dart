@@ -14,22 +14,28 @@ class TagUpdateDto {
   /// Returns a new [TagUpdateDto] instance.
   TagUpdateDto({
     this.color,
+    this.name,
   });
 
   /// Tag color (hex)
   String? color;
 
+  /// Tag name
+  String? name;
+
   @override
   bool operator ==(Object other) => identical(this, other) || other is TagUpdateDto &&
-    other.color == color;
+    other.color == color &&
+    other.name == name;
 
   @override
   int get hashCode =>
     // ignore: unnecessary_parenthesis
-    (color == null ? 0 : color!.hashCode);
+    (color == null ? 0 : color!.hashCode) +
+    (name == null ? 0 : name!.hashCode);
 
   @override
-  String toString() => 'TagUpdateDto[color=$color]';
+  String toString() => 'TagUpdateDto[color=$color, name=$name]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -37,6 +43,11 @@ class TagUpdateDto {
       json[r'color'] = this.color;
     } else {
     //  json[r'color'] = null;
+    }
+    if (this.name != null) {
+      json[r'name'] = this.name;
+    } else {
+    //  json[r'name'] = null;
     }
     return json;
   }
@@ -51,6 +62,7 @@ class TagUpdateDto {
 
       return TagUpdateDto(
         color: mapValueOfType<String>(json, r'color'),
+        name: mapValueOfType<String>(json, r'name'),
       );
     }
     return null;
