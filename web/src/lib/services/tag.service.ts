@@ -60,8 +60,6 @@ export const handleUpdateTag = async (tag: TreeNode, dto: TagUpdateDto) => {
 
   try {
     const response = await updateTag({ id: tag.id, tagUpdateDto: dto });
-    console.log('tagzz');
-    console.log(response);
 
     toastManager.primary($t('tag_updated', { values: { tag: response?.value || tag.value } }));
     eventManager.emit('TagUpdate', response);
