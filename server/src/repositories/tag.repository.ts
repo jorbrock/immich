@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Insertable, Kysely, Selectable, sql, Transaction, Updateable } from 'kysely';
+import { Insertable, Kysely, Selectable, sql, Updateable } from 'kysely';
 import { InjectKysely } from 'nestjs-kysely';
 import { columns } from 'src/database';
 import { Chunked, ChunkedSet, DummyValue, GenerateSql } from 'src/decorators';
@@ -243,29 +243,6 @@ export class TagRepository {
     const deletedRows = Number(result.numDeletedRows);
     if (deletedRows > 0) {
       this.logger.log(`Deleted ${deletedRows} empty tags`);
-    }
-  }
-
-  async updateTagClosures(tag: { id: string; parentId?: string | null }, tx: Transaction<DB>) {
-    // update closure table
-    await tx
-      .insertInto('tag_closure')
-      .values({ id_ancestor: tag.id, id_descendant: tag.id })
-      .onConflict((oc) => oc.doNothing())
-      .execute();
-
-    if (tag.parentId) {
-      await tx
-        .insertInto('tag_closure')
-        .columns(['id_ancestor', 'id_descendant'])
-        .expression(
-          this.db
-            .selectFrom('tag_closure')
-            .select(['id_ancestor', sql.raw<string>(`'${tag.id}'`).as('id_descendant')])
-            .where('id_descendant', '=', tag.parentId),
-        )
-        .onConflict((oc) => oc.doNothing())
-        .execute();
     }
   }
 }
