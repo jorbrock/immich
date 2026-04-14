@@ -42,6 +42,10 @@ export class TagService extends BaseService {
       }
     }
 
+    if (dto?.name.includes('/')) {
+      throw new BadRequestException(`Tag name cannot contain slash characters ("/")`);
+    }
+
     const userId = auth.user.id;
     const value = parent ? `${parent.value}/${dto.name}` : dto.name;
     const duplicate = await this.tagRepository.getByValue(userId, value);
@@ -63,6 +67,10 @@ export class TagService extends BaseService {
     const existing = await this.tagRepository.get(id);
     if (!existing) {
       throw new BadRequestException(`Tag not found with id: ${id}`);
+    }
+
+    if (name?.includes('/')) {
+      throw new BadRequestException(`Tag name cannot contain slash characters ("/")`);
     }
 
     let value;
