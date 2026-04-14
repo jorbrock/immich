@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Insertable, Kysely, Selectable, sql, Transaction, Updateable } from 'kysely';
+import { DeleteResult, Insertable, Kysely, Selectable, sql, Transaction, Updateable } from 'kysely';
 import { InjectKysely } from 'nestjs-kysely';
 import { columns } from 'src/database';
 import { Chunked, ChunkedSet, DummyValue, GenerateSql } from 'src/decorators';
@@ -126,7 +126,13 @@ export class TagRepository {
 
   @GenerateSql({ params: [DummyValue.UUID] })
   async delete(id: string) {
-    await this.db.deleteFrom('tag').where('id', '=', id).execute();
+    const descendantIds = await this.getDescendantIds(id);
+    const deleteOps: Promise<DeleteResult[]>[] = [];
+    for (const descendentId of descendantIds) {
+      deleteOps.push(this.db.deleteFrom('tag').where('id', '=', descendentId).execute());
+    }
+    await Promise.all(deleteOps);
+    //await this.db.deleteFrom('tag').where('id', '=', id).execute();
   }
 
   @ChunkedSet({ paramIndex: 1 })
