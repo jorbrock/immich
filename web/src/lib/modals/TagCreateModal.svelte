@@ -28,5 +28,7 @@
 <FormModal size="small" title={$t('create_tag')} submitText={$t('create')} icon={mdiTag} {onClose} {onSubmit}>
   <Text size="small" class="mb-4">{$t('create_tag_description')}</Text>
   <SettingInputField inputType={SettingInputFieldType.TEXT} label={$t('tag')} bind:value={tagName} />
-  <Text size="small">{$t('tag_full_path')} {tagValue}{tagName}</Text>
+  {#if tagValue !== ''}
+    <Text size="small">{$t('tag_full_path')} {tagValue}{tagName}</Text>
+  {/if}
 </FormModal>

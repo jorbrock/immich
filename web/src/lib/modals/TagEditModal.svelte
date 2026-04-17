@@ -30,5 +30,7 @@
 <FormModal title={$t('edit_tag')} size="small" icon={mdiTag} {onClose} {onSubmit}>
   <SettingInputField inputType={SettingInputFieldType.COLOR} label={$t('color')} bind:value={tagColor} />
   <SettingInputField inputType={SettingInputFieldType.TEXT} label={$t('name')} bind:value={tagName} />
-  <Text size="small">{$t('tag_full_path')} {tagPathDisplay}{tagName}</Text>
+  {#if tagPathDisplay !== ''}
+    <Text size="small">{$t('tag_full_path')} {tagPathDisplay}{tagName}</Text>
+  {/if}
 </FormModal>
