@@ -66,8 +66,8 @@ describe(TagController.name, () => {
 
     it('should allow setting a null color via an empty string', async () => {
       const id = factory.uuid();
-      await request(ctx.getHttpServer()).put(`/tags/${id}`).send({ color: '' });
-      expect(service.update).toHaveBeenCalledWith(undefined, id, expect.objectContaining({ color: null }));
+      await request(ctx.getHttpServer()).put(`/tags/${id}`).send({ name: 'tag', color: '' });
+      expect(service.update).toHaveBeenCalledWith(undefined, id, expect.objectContaining({ name: 'tag', color: null }));
     });
   });
 });
