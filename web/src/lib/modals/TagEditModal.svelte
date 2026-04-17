@@ -3,7 +3,7 @@
   import { SettingInputFieldType } from '$lib/constants';
   import { handleUpdateTag } from '$lib/services/tag.service';
   import type { TreeNode } from '$lib/utils/tree-utils';
-  import { FormModal } from '@immich/ui';
+  import { FormModal, Text } from '@immich/ui';
   import { mdiTag } from '@mdi/js';
   import { t } from 'svelte-i18n';
 
@@ -16,6 +16,8 @@
 
   let tagColor = $state(tag.color ?? '');
   let tagName = $state(tag.value ?? '');
+  let tagPath = $state(tag.path ?? '');
+  const tagPathDisplay = $state(tagPath.endsWith(tagName) ? tagPath.slice(0, -tagName.length) : tagPath);
 
   const onSubmit = async () => {
     const success = await handleUpdateTag(tag, { color: tagColor, name: tagName });
@@ -28,4 +30,5 @@
 <FormModal title={$t('edit_tag')} size="small" icon={mdiTag} {onClose} {onSubmit}>
   <SettingInputField inputType={SettingInputFieldType.COLOR} label={$t('color')} bind:value={tagColor} />
   <SettingInputField inputType={SettingInputFieldType.TEXT} label={$t('name')} bind:value={tagName} />
+  <Text size="small">{$t('tag_full_path')} {tagPathDisplay}{tagName}</Text>
 </FormModal>
