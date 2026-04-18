@@ -2518,6 +2518,8 @@ export type SystemConfigOAuthDto = {
     defaultStorageQuota: number | null;
     /** Enabled */
     enabled: boolean;
+    /** End session endpoint */
+    endSessionEndpoint: string;
     /** Issuer URL */
     issuerUrl: string;
     /** Mobile override enabled */
@@ -2526,6 +2528,8 @@ export type SystemConfigOAuthDto = {
     mobileRedirectUri: string;
     /** Profile signing algorithm */
     profileSigningAlgorithm: string;
+    /** OAuth prompt parameter (e.g. select_account, login, consent) */
+    prompt: string;
     /** Role claim */
     roleClaim: string;
     /** Scope */

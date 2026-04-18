@@ -22,9 +22,11 @@ export type OAuthConfig = {
   clientId: string;
   clientSecret?: string;
   issuerUrl: string;
+  endSessionEndpoint: string;
   mobileOverrideEnabled: boolean;
   mobileRedirectUri: string;
   profileSigningAlgorithm: string;
+  prompt: string;
   scope: string;
   signingAlgorithm: string;
   tokenEndpointAuthMethod: OAuthTokenEndpointAuthMethod;
@@ -56,6 +58,10 @@ export class OAuthRepository {
       scope: config.scope,
       state,
     };
+
+    if (config.prompt) {
+      params.prompt = config.prompt;
+    }
 
     if (client.serverMetadata().supportsPKCE()) {
       params.code_challenge = codeChallenge;
