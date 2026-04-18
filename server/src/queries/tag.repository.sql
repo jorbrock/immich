@@ -24,7 +24,7 @@ select
 from
   "tag"
 where
-  "id" in $1
+  "id" in ($1)
 
 -- TagRepository.getByValue
 select
@@ -74,14 +74,17 @@ order by
   "value"
 
 -- TagRepository.create
+begin
 insert into
   "tag" ("userId", "color", "value")
 values
   ($1, $2, $3)
 returning
   *
+rollback
 
 -- TagRepository.update
+begin
 update "tag"
 set
   "value" = $1,
@@ -90,11 +93,15 @@ where
   "id" = $3
 returning
   *
+rollback
 
 -- TagRepository.delete
-delete from "tag"
+select
+  "id_descendant"
+from
+  "tag_closure"
 where
-  "id" = $1
+  "id_ancestor" = $1
 
 -- TagRepository.addAssetIds
 insert into
