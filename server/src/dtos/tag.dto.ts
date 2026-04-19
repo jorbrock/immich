@@ -15,7 +15,7 @@ const TagCreateSchema = z
 
 const TagUpdateSchema = z
   .object({
-    name: z.string().describe('Tag name'),
+    name: z.string().nullish().describe('Tag name'),
     color: emptyStringToNull(hexColor.nullable()).optional().describe('Tag color (hex)'),
   })
   .meta({ id: 'TagUpdateDto' });

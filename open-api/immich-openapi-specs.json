@@ -24810,12 +24810,10 @@
           },
           "name": {
             "description": "Tag name",
+            "nullable": true,
             "type": "string"
           }
         },
-        "required": [
-          "name"
-        ],
         "type": "object"
       },
       "TagUpsertDto": {
