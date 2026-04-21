@@ -6901,7 +6901,6 @@ export enum Permission {
 }
 export enum AssetMediaStatus {
     Created = "created",
-    Replaced = "replaced",
     Duplicate = "duplicate"
 }
 export enum AssetUploadAction {
