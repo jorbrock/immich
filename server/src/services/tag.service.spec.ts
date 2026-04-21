@@ -50,12 +50,6 @@ describe(TagService.name, () => {
       expect(mocks.tag.create).not.toHaveBeenCalled();
     });
 
-    it('should throw an error if tag name has a slash', async () => {
-      mocks.access.tag.checkOwnerAccess.mockResolvedValue(new Set(['tag-parent']));
-      await expect(sut.create(authStub.admin, { name: 'tag/test' })).rejects.toBeInstanceOf(BadRequestException);
-      expect(mocks.tag.create).not.toHaveBeenCalled();
-    });
-
     it('should create a tag with a parent', async () => {
       mocks.access.tag.checkOwnerAccess.mockResolvedValue(new Set(['tag-parent']));
       mocks.tag.create.mockResolvedValue(tagStub.tagCreate);

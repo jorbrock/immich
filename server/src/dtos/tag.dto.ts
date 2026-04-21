@@ -23,7 +23,7 @@ export const TagUpdateSchema = z
     name: z
       .string()
       .regex(/^[^/]*$/, tagNameError)
-      .optional()
+      .nullish()
       .describe('Tag name'),
     color: emptyStringToNull(hexColor.nullable()).optional().describe('Tag color (hex)'),
   })

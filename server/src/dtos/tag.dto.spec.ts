@@ -3,7 +3,7 @@ import { TagCreateSchema, TagResponseSchema, TagUpdateSchema } from 'src/dtos/ta
 describe('Tag DTOs', () => {
   describe('TagCreateDto', () => {
     it('should validate a valid TagCreateDto', () => {
-      const data = { name: 'test-tag', parentId: '123e4567-e89b-12d3-a456-426614174000', color: '#FF0000' };
+      const data = { name: 'test-tag', parentId: 'dfffed71-8ed5-44d7-81fe-9b2ddfbef361', color: '#FF0000' };
       const result = TagCreateSchema.safeParse(data);
       expect(result.success).toBe(true);
     });
