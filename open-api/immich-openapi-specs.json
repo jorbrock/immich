@@ -24743,6 +24743,7 @@
           },
           "name": {
             "description": "Tag name",
+            "pattern": "^[^/]*$",
             "type": "string"
           },
           "parentId": {
@@ -24810,7 +24811,7 @@
           },
           "name": {
             "description": "Tag name",
-            "nullable": true,
+            "pattern": "^[^/]*$",
             "type": "string"
           }
         },

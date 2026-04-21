@@ -31,6 +31,6 @@
   <SettingInputField inputType={SettingInputFieldType.COLOR} label={$t('color')} bind:value={tagColor} />
   <SettingInputField inputType={SettingInputFieldType.TEXT} label={$t('name')} bind:value={tagName} />
   {#if tagPathDisplay !== ''}
-    <Text size="small">{$t('tag_full_path')} {tagPathDisplay}{tagName}</Text>
+    <Text size="small">{$t('tag_full_path', { values: { tag: tagPathDisplay } })}{tagName}</Text>
   {/if}
 </FormModal>

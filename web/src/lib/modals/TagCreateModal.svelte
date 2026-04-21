@@ -29,6 +29,6 @@
   <Text size="small" class="mb-4">{$t('create_tag_description')}</Text>
   <SettingInputField inputType={SettingInputFieldType.TEXT} label={$t('tag')} bind:value={tagName} />
   {#if tagValue !== ''}
-    <Text size="small">{$t('tag_full_path')} {tagValue}{tagName}</Text>
+    <Text size="small">{$t('tag_full_path', { values: { tag: tagValue } })}{tagName}</Text>
   {/if}
 </FormModal>

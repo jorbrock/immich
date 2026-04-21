@@ -2230,7 +2230,7 @@
   "tag_created": "Created tag: {tag}",
   "tag_face": "Tag face",
   "tag_feature_description": "Browsing photos and videos grouped by logical tag topics",
-  "tag_full_path": "Full path:",
+  "tag_full_path": "Full path: {tag}",
   "tag_not_found_question": "Cannot find a tag? <link>Create a new tag.</link>",
   "tag_people": "Tag People",
   "tag_updated": "Updated tag: {tag}",

@@ -102,6 +102,9 @@ from
   "tag_closure"
 where
   "id_ancestor" = $1
+delete from "tag"
+where
+  "id" in ()
 
 -- TagRepository.addAssetIds
 insert into
