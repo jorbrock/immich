@@ -284,6 +284,12 @@ export class MediumTestContext<S extends BaseService = BaseService> {
     };
   }
 
+  async newTag(dto: Insertable<TagTable>) {
+    const tag = mediumFactory.tagInsert(dto);
+    const result = await this.get(TagRepository).create(tag);
+    return { tag, result };
+  }
+
   async newTagAsset(tagBulkAssets: { tagIds: string[]; assetIds: string[] }) {
     const tagsAssets: Insertable<TagAssetTable>[] = [];
     for (const tagId of tagBulkAssets.tagIds) {
@@ -549,8 +555,6 @@ const assetInsert = (asset: Partial<Insertable<AssetTable>> = {}) => {
   const id = asset.id || newUuid();
   const now = newDate();
   const defaults: Insertable<AssetTable> = {
-    deviceAssetId: '',
-    deviceId: '',
     originalFileName: '',
     checksum: randomBytes(32),
     checksumAlgorithm: ChecksumAlgorithm.sha1File,

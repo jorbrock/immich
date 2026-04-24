@@ -54,7 +54,7 @@ describe(TagController.name, () => {
     it('should require a valid uuid', async () => {
       const { status, body } = await request(ctx.getHttpServer()).get(`/tags/123`);
       expect(status).toBe(400);
-      expect(body).toEqual(errorDto.badRequest([expect.stringContaining('id must be a UUID')]));
+      expect(body).toEqual(errorDto.badRequest(['[id] Invalid UUID']));
     });
   });
 
@@ -66,8 +66,8 @@ describe(TagController.name, () => {
 
     it('should allow setting a null color via an empty string', async () => {
       const id = factory.uuid();
-      await request(ctx.getHttpServer()).put(`/tags/${id}`).send({ color: '' });
-      expect(service.update).toHaveBeenCalledWith(undefined, id, expect.objectContaining({ color: null }));
+      await request(ctx.getHttpServer()).put(`/tags/${id}`).send({ name: 'tag', color: '' });
+      expect(service.update).toHaveBeenCalledWith(undefined, id, expect.objectContaining({ name: 'tag', color: null }));
     });
   });
 });
