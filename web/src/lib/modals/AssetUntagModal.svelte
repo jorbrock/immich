@@ -16,14 +16,14 @@
 
   const childTagNames: string[] = [];
   const childTagIds: string[] = [];
-  const traverse = (node: TreeNode, parentPath: string | null) => {
+  const traverse = (node: TreeNode) => {
     for (const child of node.children) {
-      childTagNames.push(parentPath ? `${parentPath}/${child.value}` : child.value);
+      childTagNames.push(child.path);
       childTagIds.push(child.id ?? '');
-      traverse(child, parentPath ? `${parentPath}/${child.value}` : child.value);
+      traverse(child);
     }
   };
-  traverse(tag, null);
+  traverse(tag);
 
   const onSubmit = async () => {
     const tagIds = [tag.id ?? ''];
@@ -44,11 +44,11 @@
   submitText={$t('remove')}
   submitColor="danger"
 >
-  <div class="mb-4">{$t('remove_tagged_assets', { values: { tagName: tag.value, count: assetIds.length } })}</div>
+  <div>{$t('remove_tagged_assets', { values: { tagName: tag.value, count: assetIds.length } })}</div>
 
   {#if childTagNames.length > 0}
-    <div>{$t('tag_children_list')}</div>
-    <div class="pl-3">
+    <div class="mt-4">{$t('tag_children_list')}</div>
+    <div class="mb-3 pl-3">
       {#each childTagNames as childTagName (childTagName)}
         <div class="flex items-center gap-2">
           <Icon icon={mdiTag} />

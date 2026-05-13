@@ -12,6 +12,7 @@ import {
   updateAssets,
   type AssetResponseDto,
   type AssetTypeEnum,
+  type BulkIdResponseDto,
   type DownloadInfoDto,
   type ExifResponseDto,
   type StackResponseDto,
@@ -64,7 +65,7 @@ export const removeTag = async ({
   let untaggedTagIdsCount = 0;
   const untaggedAssetIds: string[] = [];
   for (const tagId of tagIds) {
-    const responses = await untagAssets({ id: tagId, bulkIdsDto: { ids: assetIds } });
+    const responses: BulkIdResponseDto[] = await untagAssets({ id: tagId, bulkIdsDto: { ids: assetIds } });
     const successResponses = responses.filter((response) => response.success);
     if (successResponses.length > 0) {
       untaggedTagIdsCount++;
