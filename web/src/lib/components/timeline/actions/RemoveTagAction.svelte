@@ -18,7 +18,7 @@
   const text = $t('remove_tag');
   const icon = mdiTagMinusOutline;
 
-  const handleTagAssets = async () => {
+  const handleUntagAssets = async () => {
     const assets = assetMultiSelectManager.ownedAssets;
     const didUpdate = await modalManager.show(AssetUntagModal, { tag, assetIds: assets.map(({ id }) => id) });
     if (didUpdate) {
@@ -27,12 +27,12 @@
   };
 </script>
 
-<svelte:document use:shortcut={{ shortcut: { key: 't' }, onShortcut: handleTagAssets }} />
+<svelte:document use:shortcut={{ shortcut: { key: 'u' }, onShortcut: handleUntagAssets }} />
 
 {#if menuItem}
-  <MenuOption {text} {icon} onClick={handleTagAssets} />
+  <MenuOption {text} {icon} onClick={handleUntagAssets} />
 {/if}
 
 {#if !menuItem}
-  <IconButton shape="round" color="secondary" variant="ghost" aria-label={text} {icon} onclick={handleTagAssets} />
+  <IconButton shape="round" color="secondary" variant="ghost" aria-label={text} {icon} onclick={handleUntagAssets} />
 {/if}
