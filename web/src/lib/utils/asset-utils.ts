@@ -61,16 +61,30 @@ export const removeTag = async ({
   tagIds: string[];
   showNotification?: boolean;
 }) => {
+  let untaggedTagIdsCount = 0;
+  const untaggedAssetIds: string[] = [];
   for (const tagId of tagIds) {
-    await untagAssets({ id: tagId, bulkIdsDto: { ids: assetIds } });
+    const responses = await untagAssets({ id: tagId, bulkIdsDto: { ids: assetIds } });
+    const successResponses = responses.filter((response) => response.success);
+    if (successResponses.length > 0) {
+      untaggedTagIdsCount++;
+    }
+    untaggedAssetIds.push(...successResponses.map((response) => response.id));
   }
 
+  const untaggedAssetIdsCount = new Set(untaggedAssetIds).size;
   if (showNotification) {
     const $t = await getFormatter();
-    toastManager.primary($t('removed_tagged_assets', { values: { count: assetIds.length } }));
+    if (untaggedAssetIds.length === 0) {
+      toastManager.info($t('no_assets_removed'));
+    } else {
+      toastManager.success(
+        $t('removed_tagged_assets', { values: { numTags: untaggedTagIdsCount, count: untaggedAssetIdsCount } }),
+      );
+    }
   }
 
-  return assetIds;
+  return untaggedAssetIds;
 };
 
 export const downloadBlob = (data: Blob, filename: string) => {

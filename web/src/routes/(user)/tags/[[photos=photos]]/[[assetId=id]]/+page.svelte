@@ -20,6 +20,7 @@
   import SelectAllAssets from '$lib/components/timeline/actions/SelectAllAction.svelte';
   import SetVisibilityAction from '$lib/components/timeline/actions/SetVisibilityAction.svelte';
   import TagAction from '$lib/components/timeline/actions/TagAction.svelte';
+  import RemoveTagAction from '$lib/components/timeline/actions/RemoveTagAction.svelte';
   import { AssetAction } from '$lib/constants';
   import SkipLink from '$lib/elements/SkipLink.svelte';
   import { assetMultiSelectManager } from '$lib/managers/asset-multi-select-manager.svelte';
@@ -134,6 +135,7 @@
           />
           {#if authManager.preferences.tags.enabled}
             <TagAction menuItem />
+            <RemoveTagAction menuItem {tag} />
           {/if}
           <DeleteAssets
             menuItem
