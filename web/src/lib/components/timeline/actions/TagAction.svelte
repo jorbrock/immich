@@ -18,7 +18,9 @@
 
   const handleTagAssets = async () => {
     const assets = assetMultiSelectManager.ownedAssets;
-    const didUpdate = await modalManager.show(AssetTagModal, { assetIds: assets.map(({ id }) => id) });
+    const didUpdate = await modalManager.show(AssetTagModal, {
+      assetData: assets.map(({ id, tags }) => ({ assetId: id, tagIds: tags || [] })),
+    });
     if (didUpdate) {
       assetMultiSelectManager.clear();
     }

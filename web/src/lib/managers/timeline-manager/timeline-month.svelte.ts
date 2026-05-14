@@ -202,6 +202,7 @@ export class TimelineMonth {
               assetCount: Number.parseInt(bucketAssets.stack[i]![1]),
             }
           : null,
+        tags: bucketAssets.tags?.[i] ?? null,
         thumbhash: bucketAssets.thumbhash[i],
         people: null, // People are not included in the bucket assets
       };

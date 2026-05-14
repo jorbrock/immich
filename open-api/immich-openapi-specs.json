@@ -25153,6 +25153,17 @@
             },
             "type": "array"
           },
+          "tags": {
+            "description": "Array of tag ID arrays for each asset",
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "nullable": true,
+              "type": "array"
+            },
+            "type": "array"
+          },
           "thumbhash": {
             "description": "Array of BlurHash strings for generating asset previews (base64 encoded)",
             "items": {

@@ -205,7 +205,7 @@ export const getAssetActions = ($t: MessageFormatter, asset: AssetResponseDto) =
     title: $t('add_tag'),
     icon: mdiTagPlusOutline,
     $if: () => authManager.authenticated && authManager.preferences.tags.enabled,
-    onAction: () => modalManager.show(AssetTagModal, { assetIds: [asset.id] }),
+    onAction: () => modalManager.show(AssetTagModal, { assetData: [{ assetId: asset.id, tagIds: asset.tags || [] }] }),
     shortcuts: { key: 't' },
   };
 

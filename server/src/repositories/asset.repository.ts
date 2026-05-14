@@ -789,6 +789,11 @@ export class AssetRepository {
             'asset_exif.city',
             'asset_exif.country',
             'asset_exif.projectionType',
+            sql`(
+              select coalesce(array_agg(distinct tag_asset."tagId"), '{}')
+              from tag_asset
+              where tag_asset."assetId" = asset.id
+            )`.as('tags'),
             eb.fn
               .coalesce(
                 eb
@@ -892,6 +897,7 @@ export class AssetRepository {
             eb.fn.coalesce(eb.fn('array_agg', ['projectionType']), sql.lit('{}')).as('projectionType'),
             eb.fn.coalesce(eb.fn('array_agg', ['ratio']), sql.lit('{}')).as('ratio'),
             eb.fn.coalesce(eb.fn('array_agg', ['status']), sql.lit('{}')).as('status'),
+            eb.fn.coalesce(eb.fn('json_agg', ['tags']), sql.lit('[]')).as('tags'),
             eb.fn.coalesce(eb.fn('array_agg', ['thumbhash']), sql.lit('{}')).as('thumbhash'),
           ])
           .$if(!!options.withCoordinates, (qb) =>

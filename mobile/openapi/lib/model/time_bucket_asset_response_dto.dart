@@ -30,6 +30,7 @@ class TimeBucketAssetResponseDto {
     this.projectionType = const [],
     this.ratio = const [],
     this.stack = const [],
+    this.tags = const [],
     this.thumbhash = const [],
     this.visibility = const [],
   });
@@ -85,6 +86,9 @@ class TimeBucketAssetResponseDto {
   /// Array of stack information as [stackId, assetCount] tuples (null for non-stacked assets)
   List<List<String>?> stack;
 
+  /// Array of tag ID arrays for each asset
+  List<List<String>?> tags;
+
   /// Array of BlurHash strings for generating asset previews (base64 encoded)
   List<String?> thumbhash;
 
@@ -110,6 +114,7 @@ class TimeBucketAssetResponseDto {
     _deepEquality.equals(other.projectionType, projectionType) &&
     _deepEquality.equals(other.ratio, ratio) &&
     _deepEquality.equals(other.stack, stack) &&
+    _deepEquality.equals(other.tags, tags) &&
     _deepEquality.equals(other.thumbhash, thumbhash) &&
     _deepEquality.equals(other.visibility, visibility);
 
@@ -133,11 +138,12 @@ class TimeBucketAssetResponseDto {
     (projectionType.hashCode) +
     (ratio.hashCode) +
     (stack.hashCode) +
+    (tags.hashCode) +
     (thumbhash.hashCode) +
     (visibility.hashCode);
 
   @override
-  String toString() => 'TimeBucketAssetResponseDto[city=$city, country=$country, createdAt=$createdAt, duration=$duration, fileCreatedAt=$fileCreatedAt, id=$id, isFavorite=$isFavorite, isImage=$isImage, isTrashed=$isTrashed, latitude=$latitude, livePhotoVideoId=$livePhotoVideoId, localOffsetHours=$localOffsetHours, longitude=$longitude, ownerId=$ownerId, projectionType=$projectionType, ratio=$ratio, stack=$stack, thumbhash=$thumbhash, visibility=$visibility]';
+  String toString() => 'TimeBucketAssetResponseDto[city=$city, country=$country, createdAt=$createdAt, duration=$duration, fileCreatedAt=$fileCreatedAt, id=$id, isFavorite=$isFavorite, isImage=$isImage, isTrashed=$isTrashed, latitude=$latitude, livePhotoVideoId=$livePhotoVideoId, localOffsetHours=$localOffsetHours, longitude=$longitude, ownerId=$ownerId, projectionType=$projectionType, ratio=$ratio, stack=$stack, tags=$tags, thumbhash=$thumbhash, visibility=$visibility]';
 
   Map<String, dynamic> toJson() {
     final json = <String, dynamic>{};
@@ -158,6 +164,7 @@ class TimeBucketAssetResponseDto {
       json[r'projectionType'] = this.projectionType;
       json[r'ratio'] = this.ratio;
       json[r'stack'] = this.stack;
+      json[r'tags'] = this.tags;
       json[r'thumbhash'] = this.thumbhash;
       json[r'visibility'] = this.visibility;
     return json;
@@ -222,6 +229,11 @@ class TimeBucketAssetResponseDto {
             : const [],
         stack: json[r'stack'] is List
           ? (json[r'stack'] as List).map((e) =>
+              e == null ? null : (e as List).cast<String>()
+            ).toList()
+          :  const [],
+        tags: json[r'tags'] is List
+          ? (json[r'tags'] as List).map((e) =>
               e == null ? null : (e as List).cast<String>()
             ).toList()
           :  const [],

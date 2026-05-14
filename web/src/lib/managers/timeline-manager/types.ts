@@ -18,7 +18,7 @@ export type Direction = 'earlier' | 'later';
 export type TimelineAsset = {
   id: string;
   ownerId: string;
-  tags?: string[];
+  tags: string[] | null;
   ratio: number;
   thumbhash: string | null;
   localDateTime: TimelineDateTime;

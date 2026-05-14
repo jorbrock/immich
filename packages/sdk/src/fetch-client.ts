@@ -2666,6 +2666,8 @@ export type TimeBucketAssetResponseDto = {
     ratio: number[];
     /** Array of stack information as [stackId, assetCount] tuples (null for non-stacked assets) */
     stack?: (string[] | null)[];
+    /** Array of tag ID arrays for each asset */
+    tags?: (string[] | null)[];
     /** Array of BlurHash strings for generating asset previews (base64 encoded) */
     thumbhash: (string | null)[];
     /** Array of visibility statuses for each asset (e.g., ARCHIVE, TIMELINE, HIDDEN, LOCKED) */

@@ -12,11 +12,12 @@
 
   interface Props {
     onClose: (updated?: boolean) => void;
-    assetIds: string[];
+    assetData: { assetId: string; tagIds: string[] }[];
   }
 
-  let { onClose, assetIds }: Props = $props();
+  let { onClose, assetData }: Props = $props();
 
+  const assetIds = assetData.map(({ assetId }) => assetId);
   let allTags: TagResponseDto[] = $state([]);
   let tagMap = $derived(Object.fromEntries(allTags.map((tag) => [tag.id, tag])));
   let selectedIds = new SvelteSet<string>();
