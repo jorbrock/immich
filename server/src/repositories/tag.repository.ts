@@ -59,6 +59,23 @@ export class TagRepository {
     return this.db.selectFrom('tag').select(columns.tag).where('userId', '=', userId).orderBy('value').execute();
   }
 
+  @GenerateSql({ params: [[DummyValue.UUID]] })
+  getIdsForAssets(assetIds: string[]) {
+    return this.db
+      .selectFrom('tag_asset')
+      .select([
+        sql<string>`distinct "tagId"`.as('tagId'),
+        sql<string[]>`(
+            select coalesce(array_agg(distinct ta."assetId"), '{}')
+            from tag_asset as ta
+            where ta."tagId" = tag_asset."tagId"
+            and ta."assetId" in (${sql.join(assetIds, sql`, `)})
+          )`.as('assetIds'),
+      ])
+      .where('assetId', 'in', assetIds)
+      .execute();
+  }
+
   @GenerateSql({ params: [{ userId: DummyValue.UUID, color: DummyValue.STRING, value: DummyValue.STRING }] })
   async create(tag: Insertable<TagTable>) {
     let createdTag: Selectable<TagTable>;
@@ -181,6 +198,25 @@ export class TagRepository {
       .insertInto('tag_asset')
       .values(items)
       .onConflict((oc) => oc.doNothing())
+      .returningAll()
+      .execute();
+  }
+
+  @GenerateSql({ params: [[{ tagId: DummyValue.UUID, assetId: DummyValue.UUID }]] })
+  @Chunked()
+  deleteAssetIds(items: Insertable<TagAssetTable>[]) {
+    if (items.length === 0) {
+      return Promise.resolve([]);
+    }
+
+    return this.db
+      .deleteFrom('tag_asset')
+      .where(
+        sql<boolean>`("tagId","assetId") IN (${sql.join(
+          items.map(({ tagId, assetId }) => sql`(${tagId}, ${assetId})`),
+          sql`, `,
+        )})`,
+      )
       .returningAll()
       .execute();
   }
