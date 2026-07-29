@@ -391,8 +391,6 @@ class ApiClient {
           return FoldersResponse.fromJson(value);
         case 'FoldersUpdate':
           return FoldersUpdate.fromJson(value);
-        case 'HlsVideoResolution':
-          return HlsVideoResolutionTypeTransformer().decode(value);
         case 'ImageFormat':
           return ImageFormatTypeTransformer().decode(value);
         case 'IntegrityReport':
@@ -579,10 +577,6 @@ class ApiClient {
           return ReactionLevelTypeTransformer().decode(value);
         case 'ReactionType':
           return ReactionTypeTypeTransformer().decode(value);
-        case 'RecentlyAddedResponse':
-          return RecentlyAddedResponse.fromJson(value);
-        case 'RecentlyAddedUpdate':
-          return RecentlyAddedUpdate.fromJson(value);
         case 'ReleaseChannel':
           return ReleaseChannelTypeTransformer().decode(value);
         case 'ReleaseEventV1':
@@ -825,6 +819,10 @@ class ApiClient {
           return SystemConfigTrashDto.fromJson(value);
         case 'SystemConfigUserDto':
           return SystemConfigUserDto.fromJson(value);
+        case 'TagBulkAddRemoveAssetsDto':
+          return TagBulkAddRemoveAssetsDto.fromJson(value);
+        case 'TagBulkAddRemoveAssetsResponseDto':
+          return TagBulkAddRemoveAssetsResponseDto.fromJson(value);
         case 'TagBulkAssetsDto':
           return TagBulkAssetsDto.fromJson(value);
         case 'TagBulkAssetsResponseDto':
@@ -837,6 +835,8 @@ class ApiClient {
           return TagUpdateDto.fromJson(value);
         case 'TagUpsertDto':
           return TagUpsertDto.fromJson(value);
+        case 'TagsForAssetsResponseDto':
+          return TagsForAssetsResponseDto.fromJson(value);
         case 'TagsResponse':
           return TagsResponse.fromJson(value);
         case 'TagsUpdate':
