@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { BulkIdErrorReason } from 'src/dtos/asset-ids.response.dto';
-import { JobStatus } from 'src/enum';
+import { JobName, JobStatus } from 'src/enum';
 import { TagService } from 'src/services/tag.service';
 import { authStub } from 'test/fixtures/auth.stub';
 import { tagResponseStub, tagStub } from 'test/fixtures/tag.stub';
@@ -122,10 +122,30 @@ describe(TagService.name, () => {
       mocks.access.tag.checkOwnerAccess.mockResolvedValue(new Set(['tag-1']));
       mocks.tag.update.mockResolvedValue(tagStub.colorCreate);
       mocks.tag.get.mockResolvedValue(tagStub.tag);
+      mocks.tag.getAssetIdsByTagId.mockResolvedValue(['asset-1']);
+      mocks.asset.getForUpdateTags.mockResolvedValue({ tags: [{ value: 'tag' }] });
       await expect(sut.update(authStub.admin, 'tag-1', { name: 'tag', color: '#000000' })).resolves.toEqual(
         tagResponseStub.color1,
       );
+      expect(mocks.tag.getAssetIdsByTagId).toHaveBeenCalledWith('tag-1');
       expect(mocks.tag.update).toHaveBeenCalledWith('tag-1', { value: 'tag', color: '#000000' });
+      expect(mocks.asset.upsertExif).toHaveBeenCalledWith({
+        exif: { assetId: 'asset-1', lockedProperties: ['tags'], tags: ['tag'] },
+        lockedPropertiesBehavior: 'append',
+      });
+      expect(mocks.job.queueAll).toHaveBeenCalledWith([{ name: JobName.SidecarWrite, data: { id: 'asset-1' } }]);
+    });
+
+    it('should not sync assets when only the tag color changes', async () => {
+      mocks.access.tag.checkOwnerAccess.mockResolvedValue(new Set(['tag-1']));
+      mocks.tag.update.mockResolvedValue(tagStub.colorCreate);
+      mocks.tag.get.mockResolvedValue(tagStub.tag);
+
+      await sut.update(authStub.admin, 'tag-1', { color: '#000000' });
+
+      expect(mocks.tag.getAssetIdsByTagId).not.toHaveBeenCalled();
+      expect(mocks.asset.upsertExif).not.toHaveBeenCalled();
+      expect(mocks.job.queueAll).not.toHaveBeenCalled();
     });
   });
 
@@ -183,9 +203,17 @@ describe(TagService.name, () => {
     it('should remove a tag', async () => {
       mocks.tag.get.mockResolvedValue(tagStub.tag);
       mocks.tag.delete.mockResolvedValue();
+      mocks.tag.getAssetIdsByTagId.mockResolvedValue(['asset-1']);
+      mocks.asset.getForUpdateTags.mockResolvedValue({ tags: [] });
 
       await sut.remove(authStub.admin, 'tag-1');
+      expect(mocks.tag.getAssetIdsByTagId).toHaveBeenCalledWith('tag-1');
       expect(mocks.tag.delete).toHaveBeenCalledWith('tag-1');
+      expect(mocks.asset.upsertExif).toHaveBeenCalledWith({
+        exif: { assetId: 'asset-1', lockedProperties: ['tags'], tags: [] },
+        lockedPropertiesBehavior: 'append',
+      });
+      expect(mocks.job.queueAll).toHaveBeenCalledWith([{ name: JobName.SidecarWrite, data: { id: 'asset-1' } }]);
     });
   });
 
@@ -242,6 +270,173 @@ describe(TagService.name, () => {
         { tagId: 'tag-2', assetId: 'asset-2' },
         { tagId: 'tag-2', assetId: 'asset-3' },
       ]);
+    });
+  });
+
+  describe('bulkUntagAssets', () => {
+    it('should handle invalid requests', async () => {
+      mocks.access.tag.checkOwnerAccess.mockResolvedValue(new Set());
+      mocks.tag.deleteAssetIds.mockResolvedValue([]);
+      await expect(sut.bulkUntagAssets(authStub.admin, { tagIds: ['tag-1'], assetIds: ['asset-1'] })).resolves.toEqual({
+        count: 0,
+      });
+      expect(mocks.tag.deleteAssetIds).toHaveBeenCalledWith([]);
+    });
+
+    it('should delete records', async () => {
+      mocks.access.tag.checkOwnerAccess.mockResolvedValue(new Set(['tag-1', 'tag-2']));
+      mocks.access.asset.checkOwnerAccess.mockResolvedValue(new Set(['asset-1', 'asset-2', 'asset-3']));
+      mocks.asset.getForUpdateTags.mockResolvedValue({ tags: [{ value: 'tag-1' }, { value: 'tag-2' }] });
+      mocks.tag.deleteAssetIds.mockResolvedValue([
+        { tagId: 'tag-1', assetId: 'asset-1' },
+        { tagId: 'tag-1', assetId: 'asset-2' },
+        { tagId: 'tag-1', assetId: 'asset-3' },
+        { tagId: 'tag-2', assetId: 'asset-1' },
+        { tagId: 'tag-2', assetId: 'asset-2' },
+        { tagId: 'tag-2', assetId: 'asset-3' },
+      ]);
+      await expect(
+        sut.bulkUntagAssets(authStub.admin, {
+          tagIds: ['tag-1', 'tag-2'],
+          assetIds: ['asset-1', 'asset-2', 'asset-3'],
+        }),
+      ).resolves.toEqual({
+        count: 6,
+      });
+      expect(mocks.asset.upsertExif).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exif: { assetId: 'asset-1', lockedProperties: ['tags'], tags: ['tag-1', 'tag-2'] },
+          lockedPropertiesBehavior: 'append',
+        }),
+      );
+      expect(mocks.asset.upsertExif).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exif: { assetId: 'asset-2', lockedProperties: ['tags'], tags: ['tag-1', 'tag-2'] },
+          lockedPropertiesBehavior: 'append',
+        }),
+      );
+      expect(mocks.asset.upsertExif).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exif: { assetId: 'asset-3', lockedProperties: ['tags'], tags: ['tag-1', 'tag-2'] },
+          lockedPropertiesBehavior: 'append',
+        }),
+      );
+      expect(mocks.tag.deleteAssetIds).toHaveBeenCalledWith([
+        { tagId: 'tag-1', assetId: 'asset-1' },
+        { tagId: 'tag-1', assetId: 'asset-2' },
+        { tagId: 'tag-1', assetId: 'asset-3' },
+        { tagId: 'tag-2', assetId: 'asset-1' },
+        { tagId: 'tag-2', assetId: 'asset-2' },
+        { tagId: 'tag-2', assetId: 'asset-3' },
+      ]);
+    });
+  });
+
+  describe('bulkTagUntagAssets', () => {
+    it('should handle invalid requests', async () => {
+      mocks.access.tag.checkOwnerAccess.mockResolvedValue(new Set());
+      mocks.tag.upsertAssetIds.mockResolvedValue([]);
+      mocks.tag.deleteAssetIds.mockResolvedValue([]);
+      await expect(
+        sut.bulkTagUntagAssets(authStub.admin, {
+          tagIdsToAdd: ['tag-1'],
+          tagIdsToRemove: ['tag-2'],
+          assetIds: ['asset-1'],
+        }),
+      ).resolves.toEqual({
+        addedCount: 0,
+        removedCount: 0,
+      });
+      expect(mocks.tag.upsertAssetIds).toHaveBeenCalledWith([]);
+      expect(mocks.tag.deleteAssetIds).toHaveBeenCalledWith([]);
+    });
+
+    it('should add and delete records', async () => {
+      mocks.access.tag.checkOwnerAccess.mockResolvedValueOnce(new Set(['tag-1', 'tag-2']));
+      mocks.access.tag.checkOwnerAccess.mockResolvedValueOnce(new Set(['tag-3', 'tag-4']));
+      mocks.access.asset.checkOwnerAccess.mockResolvedValue(new Set(['asset-1', 'asset-2', 'asset-3']));
+      mocks.asset.getForUpdateTags.mockResolvedValue({
+        tags: [{ value: 'tag-1' }, { value: 'tag-2' }, { value: 'tag-3' }, { value: 'tag-4' }],
+      });
+      mocks.tag.upsertAssetIds.mockResolvedValue([
+        { tagId: 'tag-1', assetId: 'asset-1' },
+        { tagId: 'tag-1', assetId: 'asset-2' },
+        { tagId: 'tag-1', assetId: 'asset-3' },
+        { tagId: 'tag-2', assetId: 'asset-1' },
+        { tagId: 'tag-2', assetId: 'asset-2' },
+        { tagId: 'tag-2', assetId: 'asset-3' },
+      ]);
+      mocks.tag.deleteAssetIds.mockResolvedValue([
+        { tagId: 'tag-3', assetId: 'asset-1' },
+        { tagId: 'tag-3', assetId: 'asset-2' },
+        { tagId: 'tag-3', assetId: 'asset-3' },
+        { tagId: 'tag-4', assetId: 'asset-1' },
+        { tagId: 'tag-4', assetId: 'asset-2' },
+        { tagId: 'tag-4', assetId: 'asset-3' },
+      ]);
+      await expect(
+        sut.bulkTagUntagAssets(authStub.admin, {
+          tagIdsToAdd: ['tag-1', 'tag-2'],
+          tagIdsToRemove: ['tag-3', 'tag-4'],
+          assetIds: ['asset-1', 'asset-2', 'asset-3'],
+        }),
+      ).resolves.toEqual({
+        addedCount: 6,
+        removedCount: 6,
+      });
+      expect(mocks.asset.upsertExif).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exif: { assetId: 'asset-1', lockedProperties: ['tags'], tags: ['tag-1', 'tag-2', 'tag-3', 'tag-4'] },
+          lockedPropertiesBehavior: 'append',
+        }),
+      );
+      expect(mocks.asset.upsertExif).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exif: { assetId: 'asset-2', lockedProperties: ['tags'], tags: ['tag-1', 'tag-2', 'tag-3', 'tag-4'] },
+          lockedPropertiesBehavior: 'append',
+        }),
+      );
+      expect(mocks.asset.upsertExif).toHaveBeenCalledWith(
+        expect.objectContaining({
+          exif: { assetId: 'asset-3', lockedProperties: ['tags'], tags: ['tag-1', 'tag-2', 'tag-3', 'tag-4'] },
+          lockedPropertiesBehavior: 'append',
+        }),
+      );
+      expect(mocks.tag.upsertAssetIds).toHaveBeenCalledWith([
+        { tagId: 'tag-1', assetId: 'asset-1' },
+        { tagId: 'tag-1', assetId: 'asset-2' },
+        { tagId: 'tag-1', assetId: 'asset-3' },
+        { tagId: 'tag-2', assetId: 'asset-1' },
+        { tagId: 'tag-2', assetId: 'asset-2' },
+        { tagId: 'tag-2', assetId: 'asset-3' },
+      ]);
+      expect(mocks.tag.deleteAssetIds).toHaveBeenCalledWith([
+        { tagId: 'tag-3', assetId: 'asset-1' },
+        { tagId: 'tag-3', assetId: 'asset-2' },
+        { tagId: 'tag-3', assetId: 'asset-3' },
+        { tagId: 'tag-4', assetId: 'asset-1' },
+        { tagId: 'tag-4', assetId: 'asset-2' },
+        { tagId: 'tag-4', assetId: 'asset-3' },
+      ]);
+    });
+  });
+
+  describe('getAllForAssets', () => {
+    it('should throw an error for no asset read access', async () => {
+      mocks.access.asset.checkOwnerAccess.mockResolvedValue(new Set());
+      await expect(sut.getAllForAssets(authStub.admin, ['asset-1'])).rejects.toBeInstanceOf(BadRequestException);
+      expect(mocks.tag.getIdsForAssets).not.toHaveBeenCalled();
+    });
+    it('should get all tags for the specified assets', async () => {
+      mocks.access.asset.checkOwnerAccess.mockResolvedValue(new Set(['asset-1']));
+      mocks.tag.getIdsForAssets.mockResolvedValue([{ tagId: tagStub.tag.id, assetIds: ['asset-1'] }]);
+      await expect(sut.getAllForAssets(authStub.admin, ['asset-1'])).resolves.toEqual([
+        {
+          tagId: tagStub.tag.id,
+          assetIds: ['asset-1'],
+        },
+      ]);
+      expect(mocks.tag.getIdsForAssets).toHaveBeenCalledWith(['asset-1']);
     });
   });
 
