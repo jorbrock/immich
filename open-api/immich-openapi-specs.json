@@ -15764,6 +15764,122 @@
       }
     },
     "/tags/assets": {
+      "delete": {
+        "description": "Remove multiple tags from multiple assets in a single request.",
+        "operationId": "bulkUntagAssets",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagBulkAssetsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagBulkAssetsResponseDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "summary": "Untag assets",
+        "tags": [
+          "Tags"
+        ],
+        "x-immich-history": [
+          {
+            "version": "v2",
+            "state": "Added"
+          },
+          {
+            "version": "v2",
+            "state": "Beta"
+          },
+          {
+            "version": "v2",
+            "state": "Stable"
+          }
+        ],
+        "x-immich-permission": "tag.asset",
+        "x-immich-state": "Stable"
+      },
+      "post": {
+        "description": "Add or remove multiple tags from multiple assets in a single request.",
+        "operationId": "bulkTagUntagAssets",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagBulkAddRemoveAssetsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagBulkAddRemoveAssetsResponseDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "summary": "Tag/Untag assets",
+        "tags": [
+          "Tags"
+        ],
+        "x-immich-history": [
+          {
+            "version": "v2",
+            "state": "Added"
+          },
+          {
+            "version": "v2",
+            "state": "Beta"
+          },
+          {
+            "version": "v2",
+            "state": "Stable"
+          }
+        ],
+        "x-immich-permission": "tag.asset",
+        "x-immich-state": "Stable"
+      },
       "put": {
         "description": "Add multiple tags to multiple assets in a single request.",
         "operationId": "bulkTagAssets",
@@ -15820,6 +15936,69 @@
           }
         ],
         "x-immich-permission": "tag.asset",
+        "x-immich-state": "Stable"
+      }
+    },
+    "/tags/assets/queryTags": {
+      "post": {
+        "description": "Retrieve all tags associated with the specified assets.",
+        "operationId": "queryTagsForAssets",
+        "parameters": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagsForAssetsDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TagsForAssetsResponseDto"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          },
+          {
+            "cookie": []
+          },
+          {
+            "api_key": []
+          }
+        ],
+        "summary": "Retrieve tags for assets",
+        "tags": [
+          "Tags"
+        ],
+        "x-immich-history": [
+          {
+            "version": "v2",
+            "state": "Added"
+          },
+          {
+            "version": "v2",
+            "state": "Beta"
+          },
+          {
+            "version": "v2",
+            "state": "Stable"
+          }
+        ],
+        "x-immich-permission": "tag.read",
         "x-immich-state": "Stable"
       }
     },
@@ -15936,7 +16115,6 @@
         "x-immich-state": "Stable"
       },
       "put": {
-        "deprecated": true,
         "description": "Update an existing tag identified by its ID.",
         "operationId": "updateTag",
         "parameters": [
@@ -15986,8 +16164,7 @@
         ],
         "summary": "Update a tag",
         "tags": [
-          "Tags",
-          "Deprecated"
+          "Tags"
         ],
         "x-immich-history": [
           {
@@ -16001,15 +16178,10 @@
           {
             "version": "v2",
             "state": "Stable"
-          },
-          {
-            "version": "v3",
-            "state": "Deprecated",
-            "replacementId": "updateTag"
           }
         ],
         "x-immich-permission": "tag.update",
-        "x-immich-state": "Deprecated"
+        "x-immich-state": "Stable"
       }
     },
     "/tags/{id}/assets": {
@@ -32137,6 +32309,65 @@
         ],
         "type": "object"
       },
+      "TagBulkAddRemoveAssetsDto": {
+        "properties": {
+          "assetIds": {
+            "description": "Asset IDs to tag/untag",
+            "items": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "tagIdsToAdd": {
+            "description": "Tag IDs to add to assets",
+            "items": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "tagIdsToRemove": {
+            "description": "Tag IDs to remove from assets",
+            "items": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "assetIds",
+          "tagIdsToAdd",
+          "tagIdsToRemove"
+        ],
+        "type": "object"
+      },
+      "TagBulkAddRemoveAssetsResponseDto": {
+        "properties": {
+          "addedCount": {
+            "description": "Number of assets tagged",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer"
+          },
+          "removedCount": {
+            "description": "Number of assets untagged",
+            "maximum": 9007199254740991,
+            "minimum": -9007199254740991,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "addedCount",
+          "removedCount"
+        ],
+        "type": "object"
+      },
       "TagBulkAssetsDto": {
         "properties": {
           "assetIds": {
@@ -32167,7 +32398,7 @@
       "TagBulkAssetsResponseDto": {
         "properties": {
           "count": {
-            "description": "Number of assets tagged",
+            "description": "Number of assets tagged/untagged",
             "maximum": 9007199254740991,
             "minimum": -9007199254740991,
             "type": "integer"
@@ -32276,6 +32507,48 @@
         },
         "required": [
           "tags"
+        ],
+        "type": "object"
+      },
+      "TagsForAssetsDto": {
+        "properties": {
+          "assetIds": {
+            "description": "Asset IDs to retrieve tags for",
+            "items": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+              "type": "string"
+            },
+            "maxItems": 10000,
+            "minItems": 1,
+            "type": "array"
+          }
+        },
+        "required": [
+          "assetIds"
+        ],
+        "type": "object"
+      },
+      "TagsForAssetsResponseDto": {
+        "properties": {
+          "assetIds": {
+            "description": "Asset IDs associated with the tag",
+            "items": {
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "tagId": {
+            "description": "Tag ID",
+            "format": "uuid",
+            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-4[0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12})$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tagId"
         ],
         "type": "object"
       },
