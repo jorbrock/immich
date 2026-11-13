@@ -86,6 +86,17 @@ where
 order by
   "value"
 
+-- TagRepository.getIdsForAssets
+select
+  "tagId",
+  array_agg("assetId") as "assetIds"
+from
+  "tag_asset"
+where
+  "assetId" in ($1)
+group by
+  "tagId"
+
 -- TagRepository.create
 with
   "created_tag" as (
@@ -155,10 +166,17 @@ where
 
 -- TagRepository.upsertAssetIds
 insert into
-  "tag_asset" ("assetId", "tagIds")
+  "tag_asset" ("assetId", "tagId")
 values
   ($1, $2)
 on conflict do nothing
+returning
+  *
+
+-- TagRepository.deleteAssetIds
+delete from "tag_asset"
+where
+  ("tagId", "assetId") in (($1, $2))
 returning
   *
 
