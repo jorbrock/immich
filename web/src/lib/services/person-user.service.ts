@@ -27,6 +27,17 @@ export const getPeopleUserActions = ($t: MessageFormatter, users: UserResponseDt
   return { ManageAccess };
 };
 
+export const getPeopleUserActions = ($t: MessageFormatter, users: UserResponseDto[], people?: PersonResponseDto[]) => {
+  const ManageAccess: ActionItem = {
+    title: $t('manage_person_access'),
+    icon: mdiAccountMultipleOutline,
+    $if: () => users.length > 0,
+    onAction: () => modalManager.show(PersonBulkShareModal, { users, people }),
+  };
+
+  return { ManageAccess };
+};
+
 export const getPersonUsersActions = (
   $t: MessageFormatter,
   person: PersonResponseDto,

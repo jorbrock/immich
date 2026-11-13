@@ -50,6 +50,12 @@
     configToEdit.storageTemplate.template = DATE_TEMPLATE;
   }
 
+  // TODO remove once we support partial overwriting with database values
+  if (preselectDate && !featureFlagsManager.value.configFile && !configToEdit.storageTemplate.enabled) {
+    configToEdit.storageTemplate.enabled = true;
+    configToEdit.storageTemplate.template = DATE_TEMPLATE;
+  }
+
   let templateOptions: SystemConfigTemplateStorageOptionDto | undefined = $state();
   let selectedPreset = $state('');
   let customTemplate = $state(config.storageTemplate.template);

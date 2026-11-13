@@ -1,3 +1,4 @@
+import { Check } from '@immich/sql-tools';
 import {
   AfterInsertTrigger,
   Check,

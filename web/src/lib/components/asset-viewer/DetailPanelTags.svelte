@@ -19,7 +19,7 @@
   let tags = $derived(asset.tags || []);
 
   const handleRemove = async (tagId: string) => {
-    const ids = await removeTag({ tagIds: [tagId], assetIds: [asset.id], showNotification: false });
+    const ids = await untagAssets({ tagIds: [tagId], assetIds: [asset.id], showNotification: false });
     if (ids) {
       asset = await getAssetInfo({ id: asset.id });
     }

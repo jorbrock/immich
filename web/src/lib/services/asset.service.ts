@@ -23,6 +23,7 @@ import {
   AssetTypeEnum,
   AssetVisibility,
   bulkTagAssets,
+  bulkTagUntagAssets,
   getAssetInfo,
   runAssetJobs,
   updateAsset,
@@ -111,7 +112,7 @@ export const getAssetBulkActions = ($t: MessageFormatter, album?: AlbumResponseD
   };
 
   const Tag: ActionItem = {
-    title: $t('tag'),
+    title: $t('tag_add_edit'),
     icon: mdiTagMultipleOutline,
     $if: () => authManager.preferences.tags.enabled && assetMultiSelectManager.isAllUserOwned,
     onAction: async () => {
@@ -612,6 +613,27 @@ const undoArchiveAssets = async (assets: TimelineAsset[]) => {
     eventManager.emit('AssetsUndoArchive', assets);
   } catch (error) {
     handleError(error, $t('errors.unable_to_archive_unarchive', { values: { archived: false } }));
+  }
+};
+
+export const handleTagUntagAssets = async (assetIds: string[], tagIdsToAdd: string[], tagIdsToRemove: string[]) => {
+  const $t = await getFormatter();
+
+  try {
+    const { addedCount, removedCount } = await bulkTagUntagAssets({
+      tagBulkAddRemoveAssetsDto: { tagIdsToAdd, tagIdsToRemove, assetIds },
+    });
+    if (addedCount) {
+      toastManager.primary($t('tagged_assets', { values: { count: addedCount } }));
+    }
+    if (removedCount) {
+      toastManager.primary($t('removed_tagged_assets', { values: { count: removedCount } }));
+    }
+    eventManager.emit('AssetsTag', assetIds);
+    return true;
+  } catch (error) {
+    handleError(error, $t('errors.failed_to_tag_assets'));
+    return false;
   }
 };
 

@@ -26,7 +26,7 @@
   } from '@immich/sdk';
   import { ActionButton, Button, Icon, IconButton, modalManager } from '@immich/ui';
   import { mdiAccountOff, mdiEyeOutline, mdiTune } from '@mdi/js';
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import { t } from 'svelte-i18n';
   import { goto } from '$app/navigation';
   import { page } from '$app/state';

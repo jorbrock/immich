@@ -395,7 +395,6 @@
               <ActionMenuItem action={Actions.Unarchive} />
               <SetVisibilityAction menuItem onVisibilitySet={handleSetVisibility} />
               <ActionMenuItem action={Actions.Tag} />
-
               <DeleteAssets menuItem {onAssetDelete} onUndoDelete={onSearchQueryUpdate} />
 
               <hr />

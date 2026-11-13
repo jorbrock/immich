@@ -539,7 +539,7 @@ export class TimelineManager extends VirtualScrollManager {
 
   /**
   Adds assets to existing segments, creating new segments as needed.
-  
+
   This is an internal method that assumes the provided assets are not already
   present in the timeline. For updating existing assets, use updateAssetOperation().
   */
